@@ -2,7 +2,7 @@ import { Route, BrowserRouter, Routes } from 'react-router-dom'
 import Login from '../screens/Login'
 import Register from '../screens/Register'
 import Project from '../screens/Project.jsx'
-import ProjectDetails from '../screens/Projectdetails.jsx'
+import Projectdetails from '../screens/Projectdetails.jsx'
 import About from '../screens/about'
 import UserAuth from '../auth/UserAuth'
 
@@ -16,7 +16,7 @@ const AppRoutes = () => {
             <Route path='/contact' element= { <div>Contact</div> } />
             <Route path='/register' element= { <Register/> } />
             <Route path='/projects' element= { <UserAuth> <Project/> </UserAuth>} />
-            <Route path='/projects/:projectId' element= { <ProjectDetails/> } />
+            <Route path='/projects/:projectId' element= { <Projectdetails/> } />
          </Routes>
     </BrowserRouter>
   )
