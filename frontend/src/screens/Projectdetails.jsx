@@ -31,38 +31,33 @@ const Projectdetails = () => {
   const navigate = useNavigate();
   const { projectId } = useParams();
 
-  // UI State
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showUserPopup, setShowUserPopup] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(new Set());
 
-  // Project State
   const [project, setProject] = useState(null);
   const [isProjectLoading, setIsProjectLoading] = useState(true);
   const [users, setUsers] = useState([]);
 
-  // Message State
+
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const messageBox = useRef(null);
 
-  // WebContainer State
+
   const [iframeUrl, setIframeUrl] = useState(null);
   const [runProcess, setRunProcess] = useState(null);
   const [isIframeOpen, setIsIframeOpen] = useState(false);
   const [webContainer, setWebContainer] = useState(null);
 
-  // File Tree State
   const [fileTree, setFileTree] = useState({});
   const [currentFile, setCurrentFile] = useState(null);
   const [openFiles, setOpenFiles] = useState([]);
 
-  // Refs to prevent duplicate initialization
   const socketInitialized = useRef(false);
   const webContainerInitialized = useRef(false);
 
-  // Handle user selection for collaborators
   const handleUserClick = (id) => {
     setSelectedUserId((prevSelectedUserId) => {
       const newSelectedUserId = new Set(prevSelectedUserId);
@@ -75,7 +70,7 @@ const Projectdetails = () => {
     });
   };
 
-  // Add collaborators to project
+
   const addCollaborators = async () => {
     if (!project?._id || selectedUserId.size === 0) return;
 
@@ -85,8 +80,7 @@ const Projectdetails = () => {
         users: Array.from(selectedUserId).map((id) => id.toString()),
       });
 
-      
-      // Update project with new users
+
       if (response.data.project) {
         setProject(response.data.project);
       }
@@ -99,7 +93,6 @@ const Projectdetails = () => {
     }
   };
 
-  // Format AI message with markdown
   const aiMessage = (message) => {
     let parsed = { text: message };
 
@@ -123,7 +116,7 @@ const Projectdetails = () => {
     );
   };
 
-  // Send message
+
   const send = () => {
     if (!message.trim() || !project?._id) return;
 
@@ -139,7 +132,7 @@ const Projectdetails = () => {
     scrollToBottom();
   };
 
-  // Scroll to bottom of messages
+
   const scrollToBottom = () => {
     if (messageBox.current) {
       setTimeout(() => {
@@ -148,7 +141,7 @@ const Projectdetails = () => {
     }
   };
 
-  // Save file tree to backend
+
   const saveFileTree = async (ft) => {
     if (!project?._id) return;
 
@@ -163,7 +156,7 @@ const Projectdetails = () => {
     }
   };
 
-  // Run project in WebContainer
+
   const runProject = async () => {
     if (!webContainer || !fileTree) {
       alert("WebContainer not ready. Please wait and try again.");
@@ -173,10 +166,9 @@ const Projectdetails = () => {
     try {
       setIsIframeOpen(true);
 
-      // Mount file tree
+
       await webContainer.mount(fileTree);
 
-      // Install dependencies
       const installProcess = await webContainer.spawn("npm", ["install"]);
       installProcess.output.pipeTo(
         new WritableStream({
@@ -188,17 +180,16 @@ const Projectdetails = () => {
 
       await installProcess.exit;
 
-      // Set up server ready listener
+
       webContainer.on("server-ready", (port, url) => {
         setIframeUrl(url);
       });
 
-      // Kill previous run process if exists
+
       if (runProcess) {
         runProcess.kill();
       }
 
-      // Start the project
       const run = await webContainer.spawn("npm", ["start"]);
       run.output.pipeTo(
         new WritableStream({
@@ -215,7 +206,6 @@ const Projectdetails = () => {
     }
   };
 
-  // Load project on mount - only runs once
   useEffect(() => {
     if (!projectId) {
       navigate("/");
@@ -251,7 +241,6 @@ const Projectdetails = () => {
         
         if (!isMounted) return;
         
-        // If 404 or project not found, redirect to home
         if (err.response?.status === 404 || err.response?.status === 403) {
           navigate("/");
         } else {
@@ -272,16 +261,13 @@ const Projectdetails = () => {
     };
   }, [projectId, navigate]);
 
-  // Initialize socket and WebContainer - only when project is loaded
   useEffect(() => {
     if (!project?._id) return;
 
-    // Initialize socket only once
     if (!socketInitialized.current) {
       socketInitialized.current = true;
       initializeSocket(project._id);
 
-      // Set up message receiver
       receiveMessage("project-message", (data) => {
         console.log("Received message:", data);
 
@@ -310,7 +296,6 @@ const Projectdetails = () => {
       });
     }
 
-    // Initialize WebContainer only once
     if (!webContainerInitialized.current) {
       webContainerInitialized.current = true;
       
@@ -325,7 +310,6 @@ const Projectdetails = () => {
         });
     }
 
-    // Fetch all users for collaborator modal
     if (user?._id) {
       axios
         .get(`/users/all?userId=${user._id}`)
@@ -337,7 +321,6 @@ const Projectdetails = () => {
         });
     }
 
-    // Cleanup on unmount
     return () => {
       if (runProcess) {
         runProcess.kill();
@@ -345,12 +328,10 @@ const Projectdetails = () => {
     };
   }, [project?._id, user?._id]);
 
-  // Auto-scroll when new messages arrive
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // Close user popup when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (showUserPopup && !e.target.closest('.user-popup-container')) {
@@ -439,9 +420,7 @@ const Projectdetails = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <section className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
         <header className="bg-slate-800 border-b border-slate-700 px-6 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold">{project.name}</h1>
@@ -498,7 +477,6 @@ const Projectdetails = () => {
         </header>
 
         <div className="flex flex-1 overflow-hidden">
-          {/* Chat Panel */}
           <div className="w-96 flex flex-col border-r border-slate-700 bg-slate-800">
             <div
               ref={messageBox}
@@ -580,9 +558,7 @@ const Projectdetails = () => {
             </div>
           </div>
 
-          {/* File Explorer and Editor */}
           <div className="flex-1 flex overflow-hidden">
-            {/* File Tree */}
             <div className="w-64 bg-slate-800 border-r border-slate-700 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent">
               <div className="p-4">
                 <h3 className="text-sm font-semibold text-slate-400 mb-3 uppercase tracking-wide">Files</h3>
@@ -613,8 +589,6 @@ const Projectdetails = () => {
                 </div>
               </div>
             </div>
-
-            {/* Code Editor */}
             <div className="flex-1 bg-slate-900 overflow-hidden">
               {currentFile &&
               fileTree[currentFile] &&
@@ -669,8 +643,7 @@ const Projectdetails = () => {
             </div>
           </div>
         </div>
-
-        {/* Preview iframe */}
+        
         {iframeUrl && webContainer && isIframeOpen && (
           <div className="absolute inset-0 bg-slate-900 z-50 flex flex-col">
             <div className="bg-slate-800 border-b border-slate-700 p-3 flex items-center gap-3">
@@ -703,7 +676,7 @@ const Projectdetails = () => {
         )}
       </section>
 
-      {/* Add Collaborators Modal */}
+
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 backdrop-blur-sm">
           <div className="bg-slate-800 rounded-xl w-full max-w-md mx-4 shadow-2xl border border-slate-700">
