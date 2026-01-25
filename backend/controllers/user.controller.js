@@ -62,7 +62,7 @@ export const loginController = async (req, res) => {
 
     } catch (err) {
         
-         res.status(400).send(err.meassage);
+         res.status(400).send(err.message);
     }
 }
 
