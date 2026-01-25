@@ -2,7 +2,7 @@ import { Route, BrowserRouter, Routes } from 'react-router-dom'
 import Login from '../screens/Login'
 import Register from '../screens/Register'
 import Project from '../screens/Project.jsx'
-import ProjectDetails from '../screens/ProjectDetails'
+import ProjectDetails from '../screens/Projectdetails.jsx'
 import About from '../screens/about'
 import UserAuth from '../auth/UserAuth'
 
