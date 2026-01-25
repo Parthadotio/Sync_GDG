@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+html, body {
+    color: white;
+}
+
+.message-box {
+    scroll-behavior: smooth;
+}
+.message-box ::-webkit-scrollbar {
+    display: none;
+}
