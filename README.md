@@ -67,7 +67,7 @@ A full-stack collaborative development platform that enables real-time project c
 1. **Clone the repository**
    ```bash
    git clone https://github.com/Parthadotio/Sync_.git
-   cd Sync_
+   cd Sync
    ```
 
 2. **Install dependencies**
